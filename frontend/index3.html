@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Заявка на кредит</title>
+  <style>
+    body {
+      background: #2b33a5;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1 { margin-top: 40px; }
+
+    .container {
+      width: 420px;
+      margin: 30px auto;
+      background: rgba(255,255,255,0.15);
+      padding: 20px 30px;
+      border-radius: 12px;
+    }
+
+    label { display: block; text-align: left; margin: 15px 0 5px; }
+
+    input[type=number], select {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .range-box {
+      margin-top: 5px;
+    }
+
+    input[type=range] {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #ffcc00;
+      border: none;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #result { margin-top: 20px; font-size: 1.3rem; font-weight: bold; }
+    .approved { color: #4ef37e; }
+    .denied { color: #ff7070; }
+  </style>
+</head>
+<body>
+
+<h1>ЗАЯВКА НА КРЕДИТ</h1>
+
+<div class="container">
+
+  <label>Возраст</label>
+  <input id="age_input" type="number" min="20" max="99" value="23">
+  <div class="range-box">
+    <input id="age_range" type="range" min="20" max="99" value="23">
+  </div>
+
+  <label>Доход</label>
+  <input id="income_input" type="number" min="12000" max="3750000" value="12000">
+  <div class="range-box">
+    <input id="income_range" type="range" min="12000" max="3750000" value="12000">
+  </div>
+
+  <label>Сумма кредита</label>
+  <input id="loan_input" type="number" min="45000" max="3250000" value="45000">
+  <div class="range-box">
+    <input id="loan_range" type="range" min="45000" max="3250000" value="45000">
+  </div>
+
+  <label>Процент</label>
+  <input id="rate_input" type="number" min="6" max="20" value="12">
+  <div class="range-box">
+    <input id="rate_range" type="range" min="6" max="20" value="12">
+  </div>
+
+  <label>Образование</label>
+  <select id="education">
+    <option>Студент</option>
+    <option>Бакалавр</option>
+    <option>Магистр</option>
+  </select>
+
+  <label>Жильё</label>
+  <select id="home">
+    <option>Арендованое</option>
+    <option>Собственное</option>
+    <option>Ипотечное</option>
+  </select>
+
+  <button onclick="sendForm()">Отправить</button>
+  <div id="result"></div>
+</div>
+
+<script>
+  const link = (range, input) => {
+    range.addEventListener("input", () => input.value = range.value);
+    input.addEventListener("input", () => range.value = input.value);
+  };
+
+  link(age_range, age_input);
+  link(income_range, income_input);
+  link(loan_range, loan_input);
+  link(rate_range, rate_input);
+
+  async function sendForm() {
+    const data = {
+      age: Number(age_input.value),
+      person_income: Number(income_input.value),
+      loan_amnt: Number(loan_input.value),
+      loan_int_rate: Number(rate_input.value),
+      person_education_encoded: document.getElementById("education").value,
+      person_home_ownership_encoded: document.getElementById("home").value
+    };
+
+    const resBox = document.getElementById("result");
+    resBox.textContent = "Отправка...";
+
+    try {
+      const response = await fetch('/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (result.approved) {
+        resBox.textContent = 'Заявка одобрена!';
+        resBox.className = 'approved';
+      } else {
+        resBox.textContent = 'Заявка отклонена';
+        resBox.className = 'denied';
+      }
+
+    } catch (err) {
+      resBox.textContent = 'Ошибка соединения';
+      resBox.className = 'denied';
+    }
+  }
+</script>
+
+</body>
+</html>
