@@ -2,6 +2,7 @@ fastapi
 uvicorn
 joblib
 scikit-learn
+pandas
 pydantic
 python-multipart
 scikit-optimize
