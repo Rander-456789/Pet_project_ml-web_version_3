@@ -32,7 +32,7 @@ model = joblib.load("model_2.pkl")
 
 @app.get("/")
 def root():
-    return FileResponse("frontend/index.html")
+    return FileResponse("frontend/index3.html")
 
 # ====== PREPROCESSING ======
 def preprocess(data: ClientData) -> pd.DataFrame:
@@ -69,4 +69,5 @@ def score(data: ClientData):
     return {
         "approved": approved
     }
+
 
