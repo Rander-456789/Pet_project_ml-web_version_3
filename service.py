@@ -88,8 +88,9 @@ def preprocess(data: ClientData) -> pd.DataFrame:
 def score(data: ClientData):
     X = preprocess(data)
 
-    approved = model.predict_proba(X)[0][1] <= 0.25   
+    approved = model.predict_proba(X)[0][1] <= 0.4   
 
     return {
         "approved": approved
     }
+
