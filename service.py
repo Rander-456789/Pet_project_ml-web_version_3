@@ -43,11 +43,7 @@ def preprocess(data: ClientData) -> pd.DataFrame:
     "person_home_ownership_encoded",
     "amnt_imcome",
     "age_inc",
-    "log_income",
-    "log_loan_amnt",
     "interest_burden",
-    "estimated_payment",
-    "income_after_payment",
     "large_loan"
     ]
 
@@ -65,20 +61,16 @@ def preprocess(data: ClientData) -> pd.DataFrame:
 
     data = pd.DataFrame([{
         "person_age": data.age,
-        "person_education_encoded": education_map[data.person_education],
+        "person_education": education_map[data.person_education],
         "person_income": data.person_income,
-        "person_home_ownership_encoded": home_map[data.person_home_ownership],
+        "person_home_ownership": home_map[data.person_home_ownership],
         "loan_amnt": data.loan_amnt,
         "loan_int_rate": data.loan_int_rate
     }])
 
     data['amnt_imcome'] = data['loan_amnt']/data['person_income']
     data['age_inc'] = data['person_age'] * data['person_income']
-    data['log_income'] = np.log1p(data['person_income'])
-    data['log_loan_amnt'] = np.log1p(data['loan_amnt'])
     data['interest_burden'] = data['loan_amnt'] * data['loan_int_rate']
-    data['estimated_payment'] = data['loan_amnt'] * (data['loan_int_rate'] / 100) / 12
-    data['income_after_payment'] = data['person_income'] - data['estimated_payment']
     data['large_loan'] = (data['loan_amnt'] > data['person_income'] * 5).astype(int)
     return data[FEATURE_ORDER]
 
@@ -88,9 +80,10 @@ def preprocess(data: ClientData) -> pd.DataFrame:
 def score(data: ClientData):
     X = preprocess(data)
 
-    approved = model.predict_proba(X)[0][1] <= 0.4   
+    approved = model.predict_proba(X)[0][1] <= 0.3  
 
     return {
         "approved": approved
     }
+
 
