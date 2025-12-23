@@ -27,13 +27,14 @@ app.add_middleware(
 
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
-model = joblib.load("model_2.pkl")
+model = joblib.load("model_1.pkl")
 
 @app.get("/")
 def root():
     return FileResponse("frontend/index3.html")
 
 def preprocess(data: ClientData) -> pd.DataFrame:
+    '''
     FEATURE_ORDER = [
     "person_age",
     "person_income",
@@ -46,7 +47,7 @@ def preprocess(data: ClientData) -> pd.DataFrame:
     "interest_burden",
     "large_loan"
     ]
-
+    '''
     education_map = {
         "Студент": 1,
         "Бакалавр": 2,
@@ -68,11 +69,7 @@ def preprocess(data: ClientData) -> pd.DataFrame:
         "loan_int_rate": data.loan_int_rate
     }])
 
-    data['amnt_imcome'] = data['loan_amnt']/data['person_income']
-    data['age_inc'] = data['person_age'] * data['person_income']
-    data['interest_burden'] = data['loan_amnt'] * data['loan_int_rate']
-    data['large_loan'] = (data['loan_amnt'] > data['person_income'] * 5).astype(int)
-    return data[FEATURE_ORDER]
+    return data#[FEATURE_ORDER]
 
 
 
@@ -80,10 +77,11 @@ def preprocess(data: ClientData) -> pd.DataFrame:
 def score(data: ClientData):
     X = preprocess(data)
 
-    approved = model.predict_proba(X)[0][1] <= 0.3  
+    approved = model.predict_proba(X)[0][1] <= 0.3
 
     return {
         "approved": approved
     }
+
 
 
