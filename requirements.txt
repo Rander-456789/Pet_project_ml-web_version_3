@@ -4,7 +4,9 @@ joblib
 scikit-learn
 pandas
 pydantic
+numpy
 python-multipart
 scikit-optimize
 xgboost
-numpy
+
+
