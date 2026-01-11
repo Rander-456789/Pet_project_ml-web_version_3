@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import os
+import joblib
+import numpy as np
 
 app = FastAPI()
 
@@ -15,7 +17,13 @@ app.add_middleware(
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HTML_FILE = os.path.join(BASE_DIR, "index3.html")
+MODEL_PATH = os.path.join(BASE_DIR, "model_2.pkl")
 
+# --------------------
+# Загружаем модель ОДИН РАЗ
+# --------------------
+
+model = joblib.load(MODEL_PATH)
 
 # --------------------
 # Маппинги как в обучении
@@ -55,7 +63,7 @@ def index():
 @app.post("/score")
 def score(data: LoanRequest):
     # --------------------
-    # 1. Базовая валидация
+    # 1. ЖЁСТКИЕ ОТСЕЧКИ
     # --------------------
 
     if data.age < 18 or data.age > 100:
@@ -64,8 +72,14 @@ def score(data: LoanRequest):
     if data.person_income <= 0 or data.loan_amnt <= 0:
         return {"approved": False}
 
+    if data.person_income < 30000:
+        return {"approved": False}
+
+    if data.loan_int_rate > 18:
+        return {"approved": False}
+
     # --------------------
-    # 2. Препроцессинг (1 в 1 как в обучении)
+    # 2. ПРЕПРОЦЕССИНГ (1 в 1)
     # --------------------
 
     try:
@@ -74,33 +88,32 @@ def score(data: LoanRequest):
     except KeyError:
         raise HTTPException(status_code=400, detail="Invalid categorical value")
 
-   
+    # валюты и масштаб
+    loan_amnt = data.loan_amnt * 92.93
+    person_income = ((data.person_income * 92.93) // 12) / 5.051965139984243
+
     age = data.age
     rate = data.loan_int_rate
 
-    # --------------------
-    # 3. ЛОГИКА ВМЕСТО МОДЕЛИ
-    # --------------------
-    # Имитируем здравый смысл модели
-
-    approved = True
-
-    # слишком молодой
-    if age < 21:
-        approved = False
-
-    # слишком большой кредит относительно дохода
+    # слишком большой кредит — мгновенный отказ
     if loan_amnt > person_income * 200:
-        approved = False
+        return {"approved": False}
 
-    # высокий процент
-    if rate > 18:
-        approved = False
+    # --------------------
+    # 3. ЕСЛИ ДОШЛИ СЮДА → МОДЕЛЬ
+    # --------------------
 
-    if person_income < 30000:
-        approved = False
+    features = np.array([[
+        age,
+        person_income,
+        loan_amnt,
+        rate,
+        education,
+        home
+    ]])
+
+    prediction = model.predict(features)[0]
 
     return {
-        "approved": approved
+        "approved": bool(prediction)
     }
-
