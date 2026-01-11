@@ -88,10 +88,6 @@ def score(data: LoanRequest):
     except KeyError:
         raise HTTPException(status_code=400, detail="Invalid categorical value")
 
-    # валюты и масштаб
-    loan_amnt = data.loan_amnt * 92.93
-    person_income = ((data.person_income * 92.93) // 12) / 5.051965139984243
-
     age = data.age
     rate = data.loan_int_rate
 
@@ -117,3 +113,4 @@ def score(data: LoanRequest):
     return {
         "approved": bool(prediction)
     }
+
