@@ -74,10 +74,7 @@ def score(data: LoanRequest):
     except KeyError:
         raise HTTPException(status_code=400, detail="Invalid categorical value")
 
-    # Преобразования валюты (как в обучении)
-    loan_amnt = data.loan_amnt * 92.93
-    person_income = ((data.person_income * 92.93) // 12) / 5.051965139984243
-
+   
     age = data.age
     rate = data.loan_int_rate
 
@@ -93,15 +90,11 @@ def score(data: LoanRequest):
         approved = False
 
     # слишком большой кредит относительно дохода
-    if loan_amnt > person_income * 20:
+    if loan_amnt > person_income * 200:
         approved = False
 
     # высокий процент
     if rate > 18:
-        approved = False
-
-    # образование + жильё как бонус
-    if education == 1 and home == 1:
         approved = False
 
     if person_income < 30000:
@@ -110,3 +103,4 @@ def score(data: LoanRequest):
     return {
         "approved": approved
     }
+
