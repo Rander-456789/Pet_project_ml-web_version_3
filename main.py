@@ -51,9 +51,9 @@ def preprocess(data: LoanRequest) -> pd.DataFrame:
 
     data = pd.DataFrame([{
         "person_age": data.person_age,
-        "person_education_encoded": education_map[data.person_education],
+        "person_education": education_map[data.person_education],
         "person_income": data.person_income,
-        "person_home_ownership_encoded": home_map[data.person_home_ownership],
+        "person_home_ownership": home_map[data.person_home_ownership],
         "loan_amnt": data.loan_amnt,
         "loan_int_rate": data.loan_int_rate
     }])
@@ -82,6 +82,7 @@ def score(data: LoanRequest):
     approved = not bool(model_result)
 
     return {"approved": approved }
+
 
 
 
