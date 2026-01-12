@@ -63,7 +63,7 @@ def preprocess(data: LoanRequest) -> pd.DataFrame:
 @app.post("/score")
 def score(data: LoanRequest):
 
-    if data.person_age < 20 or data.person_age > 83:
+    if data.person_age < 27 or data.person_age > 83:
         return {"approved": False}
 
     if data.person_income < 30000:
@@ -74,6 +74,9 @@ def score(data: LoanRequest):
 
     if data.loan_amnt > data.person_income * 200:
         return {"approved": False}
+
+    if data.person_education == 'Студент' or data.person_home_ownership == 'Ипотечное':
+        return {"approved": False}
     
     
 
@@ -82,6 +85,7 @@ def score(data: LoanRequest):
     approved = not bool(model_result)
 
     return {"approved": approved }
+
 
 
 
