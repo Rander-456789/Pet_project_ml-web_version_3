@@ -79,8 +79,9 @@ def score(data: LoanRequest):
 
     X = preprocess(data)
 
-    approved = model.predict(X)[0]
+    approved = model.predict(X)[0] == 0
 
-    return {"approved": approved}
+    return {"approved": approved }
+
 
 
