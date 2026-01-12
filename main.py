@@ -77,14 +77,9 @@ def score(data: LoanRequest):
 
     if data.person_education == 'Студент' or data.person_home_ownership == 'Ипотечное':
         return {"approved": False}
-    
-    
 
-    X = preprocess(data)
-    model_result = model.predict(X)[0]
-    approved = not bool(model_result)
+    return {"approved": True }
 
-    return {"approved": approved }
 
 
 
