@@ -68,13 +68,8 @@
       font-weight: bold;
     }
 
-    .approved {
-      color: #4ef37e;
-    }
-
-    .denied {
-      color: #ff7070;
-    }
+    .approved { color: #4ef37e; }
+    .denied { color: #ff7070; }
   </style>
 </head>
 
@@ -84,30 +79,35 @@
 
 <div class="container">
 
+  <!-- Возраст -->
   <label>Возраст</label>
-  <input id="age_input" type="number" min="20" max="83" value="23">
+  <input id="age_input" type="number" min="18" max="99" value="23">
   <div class="range-box">
-    <input id="age_range" type="range" min="20" max="83" value="23">
+    <input id="age_range" type="range" min="18" max="99" value="23">
   </div>
 
+  <!-- Доход -->
   <label>Ежемесячный доход</label>
-  <input id="income_input" type="number" min="30000" max="1200000" step="1000" value="30000">
+  <input id="income_input" type="number" min="12000" max="1200000" step="1000" value="12000">
   <div class="range-box">
-    <input id="income_range" type="range" min="30000" max="1200000" step="1000" value="30000">
+    <input id="income_range" type="range" min="12000" max="1200000" step="1000" value="12000">
   </div>
 
+  <!-- Сумма кредита -->
   <label>Сумма кредита</label>
   <input id="loan_input" type="number" min="45000" max="3250000" step="1000" value="45000">
   <div class="range-box">
     <input id="loan_range" type="range" min="45000" max="3250000" step="1000" value="45000">
   </div>
 
+  <!-- Процент -->
   <label>Процентная ставка (%)</label>
-  <input id="rate_input" type="number" min="7" max="20" value="12">
+  <input id="rate_input" type="number" min="6" max="20" value="12">
   <div class="range-box">
-    <input id="rate_range" type="range" min="7" max="20" value="12">
+    <input id="rate_range" type="range" min="6" max="20" value="12">
   </div>
 
+  <!-- Образование -->
   <label>Образование</label>
   <select id="education">
     <option>Студент</option>
@@ -115,6 +115,7 @@
     <option>Магистр</option>
   </select>
 
+  <!-- Жильё -->
   <label>Тип жилья</label>
   <select id="home">
     <option>Арендованное</option>
@@ -138,10 +139,8 @@
 
     input.addEventListener("input", () => {
       let value = Number(input.value);
-
       if (value < min) value = min;
       if (value > max) value = max;
-
       input.value = value;
       range.value = value;
     });
@@ -181,8 +180,7 @@
         resBox.textContent = "Заявка отклонена";
         resBox.className = "denied";
       }
-
-    } catch (error) {
+    } catch {
       resBox.textContent = "Ошибка соединения с сервером";
       resBox.className = "denied";
     }
