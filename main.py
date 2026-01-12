@@ -44,7 +44,7 @@ def preprocess(data: LoanRequest) -> pd.DataFrame:
     }
 
     home_map = {
-        "Арендованое": 1,
+        "Арендованное": 1,
         "Собственное": 2,
         "Ипотечное": 3
     }
@@ -82,6 +82,7 @@ def score(data: LoanRequest):
     approved = not bool(model_result)
 
     return {"approved": approved }
+
 
 
 
